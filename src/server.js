@@ -35,11 +35,7 @@ const allowedOrigins = corsOriginsEnv
 
 app.use(
   cors({
-    origin: (origin, callback) => {
-      if (!origin || allowedOrigins.length === 0) return callback(null, true);
-      const isAllowed = allowedOrigins.some((o) => origin === o);
-      callback(isAllowed ? null : new Error('Not allowed by CORS'), isAllowed);
-    },
+    origin: true, // Allow all origins for now
     credentials: true,
   })
 );
@@ -74,7 +70,7 @@ app.use(
     cookie: {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      sameSite: 'lax', // Changed from 'none' to 'lax' for better compatibility
       maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
     },
     store: MongoStore.create({ mongoUrl: mongoUri, ttl: 60 * 60 * 24 * 7 }),

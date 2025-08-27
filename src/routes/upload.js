@@ -26,6 +26,8 @@ const upload = multer({ storage });
 router.post('/upload', ensureAuthenticated, upload.single('file'), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: 'no file uploaded' });
+    
+    // For Render's ephemeral filesystem, we'll store file info but note it's temporary
     const publicUrl = `/uploads/${req.file.filename}`;
     const saved = await File.create({
       originalName: req.file.originalname,
@@ -36,9 +38,15 @@ router.post('/upload', ensureAuthenticated, upload.single('file'), async (req, r
       url: publicUrl,
       uploadedBy: req.user._id,
     });
-    res.json({ file: saved });
+    
+    console.log('File uploaded successfully:', saved.originalName);
+    res.json({ 
+      file: saved,
+      message: 'File uploaded successfully (Note: files are temporary on free tier)'
+    });
   } catch (err) {
-    res.status(500).json({ error: 'upload failed' });
+    console.error('Upload error:', err);
+    res.status(500).json({ error: 'upload failed: ' + err.message });
   }
 });
 
