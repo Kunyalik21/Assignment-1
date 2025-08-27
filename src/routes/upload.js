@@ -6,7 +6,15 @@ import File from '../models/File.js';
 const router = express.Router();
 
 function ensureAuthenticated(req, res, next) {
-  if (req.isAuthenticated && req.isAuthenticated()) return next();
+  console.log('Auth check - isAuthenticated:', req.isAuthenticated());
+  console.log('Auth check - user:', req.user);
+  console.log('Auth check - session:', req.session);
+  
+  if (req.isAuthenticated && req.isAuthenticated()) {
+    console.log('User authenticated:', req.user.username);
+    return next();
+  }
+  console.log('User not authenticated');
   return res.status(401).json({ error: 'unauthorized' });
 }
 
@@ -24,6 +32,8 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 router.post('/upload', ensureAuthenticated, upload.single('file'), async (req, res) => {
+  console.log('Upload route hit - user:', req.user?.username);
+  console.log('Upload route hit - file:', req.file);
   try {
     if (!req.file) return res.status(400).json({ error: 'no file uploaded' });
     

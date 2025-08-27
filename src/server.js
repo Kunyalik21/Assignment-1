@@ -65,12 +65,12 @@ if (!sessionSecret) {
 app.use(
   session({
     secret: sessionSecret,
-    resave: false,
-    saveUninitialized: false,
+    resave: true,
+    saveUninitialized: true,
     cookie: {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax', // Changed from 'none' to 'lax' for better compatibility
+      secure: false, // Set to false for now to debug
+      sameSite: 'lax',
       maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
     },
     store: MongoStore.create({ mongoUrl: mongoUri, ttl: 60 * 60 * 24 * 7 }),
